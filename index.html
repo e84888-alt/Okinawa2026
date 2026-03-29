@@ -3,145 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>沖繩秋日行 | 21人兵團中控台</title>
+    <title>めんそーれ！沖繩21人兵團度假中</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        
+        /* 活潑的淡色背景圖案 */
+        .bg-pattern {
+            background-color: #f0f9ff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%3C94a3b8' fill-opacity='0.05'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43 0c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 64c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-7-32c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM23 48c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23 24c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm16 16c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
         .day-content { display: none; }
-        .day-content.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
-        .tab-active { color: #3b82f6; border-bottom: 4px solid #3b82f6; font-weight: 900; }
-        #photo-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-blur: 10px; }
-        .timeline-line::before { content: ''; position: absolute; left: 23px; top: 0; bottom: 0; width: 2px; background: #e2e8f0; z-index: 0; }
+        .day-content.active { display: block; animation: bounceIn 0.5s ease; }
+        
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            50% { transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* 活潑的 Tab 樣式 */
+        .tab-btn { transition: all 0.3s ease; border-radius: 99px; }
+        .tab-active { background-color: #f59e0b; color: white; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4); font-weight: 900; }
+
+        /* 卡片懸浮效果 */
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:active { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        #photo-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-blur: 8px; animation: fadeInModal 0.3s ease; }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 彩色時間軸點點 */
+        .timeline-dot::after { content: ''; position: absolute; left: 19px; top: 50px; bottom: -30px; width: 2px; background: #e2e8f0; z-index: 0; }
+        .day-content > div:last-child .timeline-dot::after { display: none; }
     </style>
 </head>
-<body class="bg-slate-50 pb-24 text-slate-800">
+<body class="bg-pattern pb-24 text-slate-900">
 
     <div id="photo-modal" onclick="closeModal()">
-        <div class="bg-white rounded-[2rem] overflow-hidden max-w-sm w-full shadow-2xl" onclick="event.stopPropagation()">
-            <img id="modal-img" src="https://placehold.co/600x400?text=Wait+for+Photo" class="w-full h-56 object-cover">
+        <div class="bg-white rounded-[2rem] overflow-hidden max-w-sm w-full shadow-2xl transition-all scale-100" onclick="event.stopPropagation()">
+            <div class="relative">
+                <img id="modal-img" src="" class="w-full h-56 object-cover">
+                <button onclick="closeModal()" class="absolute top-4 right-4 bg-white/50 text-slate-900 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm">✕</button>
+            </div>
             <div class="p-8">
-                <h3 id="modal-title" class="text-xl font-bold"></h3>
-                <p id="modal-desc" class="text-sm text-slate-500 mt-3 leading-relaxed"></p>
-                <a id="modal-map" href="#" target="_blank" class="mt-6 flex items-center justify-center gap-2 w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-100">
-                    <i class="fas fa-location-arrow"></i> 開啟 Google Maps 導航
+                <h3 id="modal-title" class="text-2xl font-black text-slate-900 tracking-tight"></h3>
+                <p id="modal-desc" class="text-slate-600 mt-4 leading-relaxed text-sm"></p>
+                <a id="modal-map" href="#" target="_blank" class="mt-8 flex items-center justify-center gap-3 w-full bg-amber-500 text-white py-4 rounded-full font-black shadow-lg shadow-amber-200 active:scale-95 transition-transform">
+                    <i class="fas fa-map-marked-alt text-lg"></i> GOOGLE MAPS 導航
                 </a>
             </div>
         </div>
     </div>
 
-    <header class="bg-slate-900 text-white p-8">
-        <div class="flex justify-between items-start">
-            <div>
-                <h1 class="text-2xl font-black tracking-tighter">沖繩．秋日家族行</h1>
-                <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest">Sep 14 - Sep 18, 2026</p>
-            </div>
-            <div class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full text-[10px] font-bold">
-                16大 + 5小
-            </div>
+    <header class="bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-700 text-white p-8 rounded-b-[2.5rem] shadow-xl shadow-blue-100 relative overflow-hidden">
+        <div class="relative z-10">
+            <p class="text-[10px] bg-white/20 inline-block px-2 py-1 rounded-full font-bold uppercase tracking-widest mb-2">Haisai! 沖縄</p>
+            <h1 class="text-3xl font-black tracking-tighter">めんそーれ！</h1>
+            <p class="text-lg font-bold tracking-tight mt-1">21人兵團度假儀表板</p>
         </div>
+        <i class="fas fa-umbrella-beach absolute -right-5 -bottom-5 text-9xl text-white/10 rotate-12"></i>
     </header>
 
-    <nav class="sticky top-0 bg-white/90 backdrop-blur-md border-b flex justify-around z-50">
-        <button onclick="showDay(1)" id="btn-1" class="py-5 px-4 tab-active text-xs font-black">D1</button>
-        <button onclick="showDay(2)" id="btn-2" class="py-5 px-4 text-slate-300 text-xs font-black">D2</button>
-        <button onclick="showDay(3)" id="btn-3" class="py-5 px-4 text-slate-300 text-xs font-black">D3</button>
-        <button onclick="showDay(4)" id="btn-4" class="py-5 px-4 text-slate-300 text-xs font-black">D4</button>
-        <button onclick="showDay(5)" id="btn-5" class="py-5 px-4 text-slate-300 text-xs font-black">D5</button>
+    <nav class="sticky top-4 mt-6 mx-4 bg-white/80 backdrop-blur-md border border-white p-2 flex justify-around z-50 rounded-full shadow-lg shadow-slate-100/50">
+        <button onclick="showDay(1)" id="btn-1" class="tab-btn py-3 px-5 tab-active text-xs flex-col flex items-center gap-1">D1 <span class="text-[9px] opacity-70">9/14</span></button>
+        <button onclick="showDay(2)" id="btn-2" class="tab-btn py-3 px-5 text-slate-400 text-xs flex-col flex items-center gap-1">D2 <span class="text-[9px] opacity-70">9/15</span></button>
+        <button onclick="showDay(3)" id="btn-3" class="py-3 px-5 text-slate-400 text-xs flex-col flex items-center gap-1">D3 <span class="text-[9px] opacity-70">9/16</span></button>
+        <button onclick="showDay(4)" id="btn-4" class="py-3 px-5 text-slate-400 text-xs flex-col flex items-center gap-1">D4 <span class="text-[9px] opacity-70">9/17</span></button>
+        <button onclick="showDay(5)" id="btn-5" class="py-3 px-5 text-slate-400 text-xs flex-col flex items-center gap-1">D5 <span class="text-[9px] opacity-70">9/18</span></button>
     </nav>
 
     <main class="max-w-md mx-auto p-6">
 
-        <div id="day-1" class="day-content active timeline-line relative space-y-8">
+        <div id="day-1" class="day-content active space-y-6">
             
-            <div class="relative pl-12">
-                <div class="absolute left-0 w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white z-10 shadow-lg shadow-blue-100">
-                    <i class="fas fa-plane-departure"></i>
+            <div class="relative pl-14 timeline-dot">
+                <div class="absolute left-0 top-1 w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center text-cyan-600 z-10 border-4 border-white shadow">
+                    <i class="fas fa-plane"></i>
                 </div>
-                <div class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100">
-                    <span class="text-[10px] font-black text-blue-500 uppercase">06:30 - 12:20</span>
-                    <h3 class="font-bold text-lg leading-tight mt-1">抵達機場與飛行</h3>
-                    <ul class="text-xs text-slate-500 mt-2 space-y-1 list-disc list-inside">
-                        <li>09:35 樂桃 MM922 起飛</li>
-                        <li>一航廈育嬰室先行放電/換尿布</li>
-                        <li>12:20 預計降落那霸二航</li>
-                    </ul>
+                <div class="bg-white p-6 rounded-3xl shadow-sm card-hover hover:shadow-lg">
+                    <div class="flex items-center gap-2 text-cyan-500 font-bold text-xs uppercase tracking-wider">
+                        <i class="fas fa-clock"></i> 06:30 - 12:20 ☀️
+                    </div>
+                    <h3 class="font-black text-xl text-slate-950 mt-1">出發！桃園 ➔ 那霸</h3>
+                    <p class="text-sm text-slate-600 mt-2 leading-relaxed">MM922 (09:35起飛)。一航廈育嬰室先行放電/換尿布。</p>
                 </div>
             </div>
 
-            <div class="relative pl-12">
-                <div class="absolute left-0 w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center text-white z-10 shadow-lg shadow-orange-100">
+            <div class="relative pl-14 timeline-dot">
+                <div class="absolute left-0 top-1 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 z-10 border-4 border-white shadow">
                     <i class="fas fa-car"></i>
                 </div>
-                <div class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100">
-                    <span class="text-[10px] font-black text-orange-500 uppercase">14:20 - 15:20</span>
-                    <h3 class="font-bold text-lg leading-tight mt-1">領取租車 (4輛分組)</h3>
-                    <p class="text-xs text-slate-500 mt-2">確認嬰兒座椅安裝，檢查外觀，同步導航群組。</p>
+                <div class="bg-white p-6 rounded-3xl shadow-sm card-hover hover:shadow-lg">
+                    <div class="flex items-center gap-2 text-blue-500 font-bold text-xs uppercase tracking-wider">
+                        <i class="fas fa-clock"></i> 14:20 - 15:20 🚗
+                    </div>
+                    <h3 class="font-black text-xl text-slate-950 mt-1">領取租車 (4輛大軍)</h3>
+                    <p class="text-sm text-slate-600 mt-2">確認嬰兒座椅、外觀、同步導航群組。</p>
                 </div>
             </div>
 
-            <div onclick="openModal('西松屋 浦添店', 'https://placehold.co/600x400?text=Nishimatsuya', '全團嬰幼兒物資補給站。建議派代表進入購買尿布、副食品、水與零食。', 'https://www.google.com/maps/search/?api=1&query=西松屋+浦添店')" 
-                 class="relative pl-12 cursor-pointer active:scale-95 transition-all">
-                <div class="absolute left-0 w-12 h-12 bg-pink-500 rounded-2xl flex items-center justify-center text-white z-10 shadow-lg shadow-pink-100">
-                    <i class="fas fa-shopping-cart"></i>
+            <div onclick="openModal('西松屋 浦添店', 'https://placehold.co/600x400?text=Baby+Shopping', '👶 戰略補給站！專派代表購買尿布、副食品包、水與大人零食。推車友善！', 'https://www.google.com/maps/search/?api=1&query=西松屋+浦添店')" 
+                 class="relative pl-14 timeline-dot cursor-pointer transition-transform active:scale-95">
+                <div class="absolute left-0 top-1 w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-pink-500 z-10 border-4 border-white shadow">
+                    <i class="fas fa-baby-carriage"></i>
                 </div>
-                <div class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100 ring-2 ring-pink-50">
-                    <span class="text-[10px] font-black text-pink-500 uppercase">15:40 - 16:20</span>
-                    <h3 class="font-bold text-lg leading-tight mt-1">戰略補給：西松屋</h3>
-                    <p class="text-[10px] text-pink-400 font-bold mt-1">📍 點擊開啟地圖導航</p>
-                </div>
-            </div>
-
-            <div onclick="openModal('Hotel Sunset Hill', 'https://placehold.co/600x400?text=Sunset+Hill', '恩納村公寓式飯店，17:00 Check-in 後休息，18:00 準時欣賞絕美陽台夕陽。', 'https://www.google.com/maps/search/?api=1&query=Hotel+Sunset+Hill')"
-                 class="relative pl-12 cursor-pointer active:scale-95 transition-all">
-                <div class="absolute left-0 w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center text-white z-10 shadow-lg shadow-slate-200">
-                    <i class="fas fa-hotel"></i>
-                </div>
-                <div class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100">
-                    <span class="text-[10px] font-black text-slate-400 uppercase">17:00 - 18:00</span>
-                    <h3 class="font-bold text-lg leading-tight mt-1">進駐飯店 & 拍夕陽</h3>
-                    <p class="text-xs text-slate-500 mt-2">放下行李，讓寶寶翻滾放鬆。</p>
+                <div class="bg-white p-6 rounded-3xl shadow-sm ring-4 ring-pink-50 card-hover hover:shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 text-pink-500 font-bold text-xs uppercase tracking-wider">
+                                <i class="fas fa-clock"></i> 15:40 - 16:20 🛍️
+                            </div>
+                            <h3 class="font-black text-xl text-slate-950 mt-1">補給：西松屋</h3>
+                        </div>
+                        <i class="fas fa-camera text-pink-200 text-xl"></i>
+                    </div>
                 </div>
             </div>
 
-            <div class="relative pl-12">
-                <div class="absolute left-0 w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center text-white z-10 shadow-lg shadow-red-100">
+            <div onclick="openModal('Hotel Sunset Hill', 'https://placehold.co/600x400?text=Sunset+Hill+Hotel', '🏨 公寓飯店 Check-in。陽台有無敵夕陽，放下行李，讓寶寶翻滾吧！', 'https://www.google.com/maps/search/?api=1&query=Hotel+Sunset+Hill')"
+                 class="relative pl-14 timeline-dot cursor-pointer transition-transform active:scale-95">
+                <div class="absolute left-0 top-1 w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-500 z-10 border-4 border-white shadow">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm card-hover hover:shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 text-orange-500 font-bold text-xs uppercase tracking-wider">
+                                <i class="fas fa-clock"></i> 17:00 - 18:00 🌇
+                            </div>
+                            <h3 class="font-black text-xl text-slate-950 mt-1">Check-in & 夕陽</h3>
+                        </div>
+                        <i class="fas fa-camera text-orange-200 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative pl-14 timeline-dot">
+                <div class="absolute left-0 top-1 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 z-10 border-4 border-white shadow">
                     <i class="fas fa-utensils"></i>
                 </div>
-                <div class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100">
-                    <span class="text-[10px] font-black text-red-500 uppercase">18:00 - 20:00</span>
-                    <h3 class="font-bold text-lg leading-tight mt-1">晚餐 (三選一)</h3>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-red-50 hover:shadow-lg transition-all">
+                    <div class="flex items-center gap-2 text-red-500 font-bold text-xs uppercase tracking-wider mb-3">
+                        <i class="fas fa-clock"></i> 18:00 - 20:00 🍲
+                    </div>
+                    <h3 class="font-black text-xl text-slate-950">晚餐兵分三路？</h3>
+                    <p class="text-[11px] text-slate-500 mt-1">點擊下方按鈕看導航/簡介</p>
                     <div class="mt-4 space-y-3">
-                        <div onclick="openModal('仲泊海産物料理店', '', '首選！榻榻米座位極多，魚湯必點。離飯店 2 分鐘車程。', 'https://www.google.com/maps/search/?api=1&query=仲泊海産物料理店')" class="p-3 bg-red-50 rounded-xl flex justify-between items-center cursor-pointer">
-                            <span class="text-xs font-bold text-red-700">A. 仲泊海産物 (首選)</span>
-                            <i class="fas fa-chevron-right text-red-200 text-xs"></i>
+                        <div onclick="openModal('仲泊海産物料理店', '', '🐟 首選！大榻榻米、魚湯必點。離飯店2分車程。適合21人！', 'https://www.google.com/maps/search/?api=1&query=仲泊海産物料理店')" class="p-4 bg-red-50 rounded-2xl flex justify-between items-center cursor-pointer active:scale-95 transition-all">
+                            <span class="text-sm font-bold text-red-800">A. 仲泊海産物 (首選)</span>
+                            <i class="fas fa-fish text-red-300"></i>
                         </div>
-                        <div onclick="openModal('SEA SIDE DRIVE-IN', '', '復古美式氛圍，24H營業，適合想快速解決一餐。', 'https://www.google.com/maps/search/?api=1&query=SEA+SIDE+DRIVE-IN')" class="p-3 bg-slate-50 rounded-xl flex justify-between items-center cursor-pointer">
-                            <span class="text-xs font-bold text-slate-600">B. SEA SIDE DRIVE-IN</span>
-                            <i class="fas fa-chevron-right text-slate-200 text-xs"></i>
+                        <div onclick="openModal('SEA SIDE DRIVE-IN', '', '🇺🇸 復古美式，離飯店極近，24H。', 'https://www.google.com/maps/search/?api=1&query=SEA+SIDE+DRIVE-IN')" class="p-4 bg-slate-50 rounded-2xl flex justify-between items-center cursor-pointer active:scale-95 transition-all">
+                            <span class="text-sm font-bold text-slate-700">B. SEA SIDE DRIVE-IN</span>
+                            <i class="fas fa-hamburger text-slate-300"></i>
                         </div>
-                        <div onclick="openModal('涮肉 San 別墅', '', '精緻阿古豬涮涮鍋，適合想吃好一點的團員。', 'https://www.google.com/maps/search/?api=1&query=Shabu-shabu+San+Villa')" class="p-3 bg-slate-50 rounded-xl flex justify-between items-center cursor-pointer">
-                            <span class="text-xs font-bold text-slate-600">C. 涮肉 San 別墅</span>
-                            <i class="fas fa-chevron-right text-slate-200 text-xs"></i>
+                        <div onclick="openModal('涮肉 San 別墅', '', '🐷 阿古豬涮涮鍋，精緻路線。', 'https://www.google.com/maps/search/?api=1&query=涮肉+San+別墅')" class="p-4 bg-slate-50 rounded-2xl flex justify-between items-center cursor-pointer active:scale-95 transition-all">
+                            <span class="text-sm font-bold text-slate-700">C. 涮肉 San 別墅</span>
+                            <i class="fas fa-hot-tub text-slate-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="relative pl-12 pb-10">
-                <div class="absolute left-0 w-12 h-12 bg-indigo-900 rounded-2xl flex items-center justify-center text-white z-10">
+            <div class="relative pl-14 timeline-dot pb-10">
+                <div class="absolute left-0 top-1 w-10 h-10 bg-indigo-900 rounded-full flex items-center justify-center text-white z-10 border-4 border-indigo-950 shadow">
                     <i class="fas fa-moon"></i>
                 </div>
-                <div class="bg-slate-800 p-5 rounded-[1.5rem] shadow-xl text-white">
-                    <span class="text-[10px] font-black text-slate-400 uppercase">21:00</span>
-                    <h3 class="font-bold text-lg leading-tight mt-1">自由活動 & 晚安</h3>
-                    <p class="text-xs text-slate-400 mt-2">仲泊海灘散步，享受第一晚沖繩風。</p>
+                <div class="bg-indigo-950 p-6 rounded-3xl shadow-xl text-indigo-100">
+                    <div class="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wider">
+                        <i class="fas fa-clock"></i> 21:00 😴
+                    </div>
+                    <h3 class="font-black text-xl text-white mt-1">海灘散步 & 晚安</h3>
+                    <p class="text-sm opacity-80 mt-2">仲泊海灘吹海風，明天又是陽光日。</p>
                 </div>
             </div>
 
         </div>
 
-        <div id="day-2" class="day-content text-center py-20 text-slate-300">Day 2 行程規畫中...</div>
+        <div id="day-2" class="day-content text-center py-20 text-slate-300">Day 2 下一個陽光景點？...</div>
         <div id="day-3" class="day-content text-center py-20 text-slate-300">Day 3 行程規畫中...</div>
         <div id="day-4" class="day-content text-center py-20 text-slate-300">Day 4 行程規畫中...</div>
         <div id="day-5" class="day-content text-center py-20 text-slate-300">Day 5 行程規畫中...</div>
@@ -151,6 +195,7 @@
     <script>
         function openModal(title, imgSrc, desc, mapLink) {
             document.getElementById('modal-title').innerText = title;
+            // 彈窗佔位圖也換得比較有趣一點
             document.getElementById('modal-img').src = imgSrc || 'https://placehold.co/600x400?text=Wait+for+Photo';
             document.getElementById('modal-desc').innerText = desc;
             document.getElementById('modal-map').href = mapLink;
@@ -160,12 +205,12 @@
         function showDay(day) {
             document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
             document.getElementById('day-' + day).classList.add('active');
-            document.querySelectorAll('nav button').forEach(el => {
+            document.querySelectorAll('.tab-btn').forEach(el => {
                 el.classList.remove('tab-active');
-                el.classList.add('text-slate-300');
+                el.classList.add('text-slate-400');
             });
             document.getElementById('btn-' + day).classList.add('tab-active');
-            document.getElementById('btn-' + day).classList.remove('text-slate-300');
+            document.getElementById('btn-' + day).classList.remove('text-slate-400');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
