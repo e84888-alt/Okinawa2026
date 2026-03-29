@@ -1,60 +1,235 @@
-<script>
-    // 預設匯率 (當網路斷線或 API 失效時使用)
-    let JPY_RATE = 0.21; 
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>めんそーれ！沖繩21人兵團度假中</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f9ff; }
+        .day-content { display: none; }
+        .day-content.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-btn { transition: all 0.2s; border-radius: 99px; }
+        .tab-active { background-color: #f59e0b; color: white; font-weight: 900; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); }
+        .logistics-text { font-size: 10px; color: #94a3b8; font-weight: 500; }
+        .logistics-line { border-left: 2px dashed #cbd5e1; margin-left: 19px; padding: 5px 0 5px 25px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-blur: 8px; }
+    </style>
+</head>
+<body class="pb-32">
 
-    // 自動從 API 抓取最新匯率 (使用 exchangerate-api)
-    async function updateExchangeRate() {
-        try {
-            // 抓取日圓對台幣的匯率
-            const response = await fetch('https://open.er-api.com/v6/latest/JPY');
-            const data = await response.json();
+    <div id="rescue-modal" class="modal-overlay" onclick="closeRescue()">
+        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-black text-rose-500"><i class="fas fa-baby mr-2"></i>育兒救援卡</h3>
+                <button onclick="closeRescue()" class="text-slate-300 text-2xl">✕</button>
+            </div>
+            <div class="space-y-4">
+                <button onclick="showJapanese('請問哪裡有哺乳室？', '授乳室（じゅにゅうしつ）はどこにありますか？')" class="w-full text-left p-4 bg-rose-50 rounded-2xl border border-rose-100 active:scale-95 transition-all">
+                    <p class="text-[10px] text-rose-400 font-bold mb-1">尋找哺乳室</p>
+                    <p class="text-sm font-bold text-rose-700">請問哪裡有哺乳室？</p>
+                </button>
+                <button onclick="showJapanese('需要熱水泡奶粉', '粉ミルク用のお湯（おゆ）をいただけますか？')" class="w-full text-left p-4 bg-sky-50 rounded-2xl border border-sky-100 active:scale-95 transition-all">
+                    <p class="text-[10px] text-sky-400 font-bold mb-1">熱水需求</p>
+                    <p class="text-sm font-bold text-sky-700">需要熱水泡奶粉</p>
+                </button>
+                <button onclick="showJapanese('有嬰兒座椅嗎？', 'ベビーチェアはありますか？')" class="w-full text-left p-4 bg-amber-50 rounded-2xl border border-amber-100 active:scale-95 transition-all">
+                    <p class="text-[10px] text-amber-500 font-bold mb-1">餐廳設施</p>
+                    <p class="text-sm font-bold text-amber-700">有嬰兒座椅嗎？</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="jp-card-modal" class="modal-overlay" onclick="closeJP()">
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full text-center shadow-2xl" onclick="event.stopPropagation()">
+            <p id="jp-card-tw" class="text-slate-400 text-sm mb-4"></p>
+            <p id="jp-card-text" class="text-3xl font-black text-slate-900 leading-relaxed mb-8"></p>
+            <button onclick="closeJP()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold">返回清單</button>
+        </div>
+    </div>
+
+    <div id="exchange-modal" class="modal-overlay" onclick="closeExchange()">
+        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl text-center" onclick="event.stopPropagation()">
+            <h3 class="text-xl font-black mb-6 italic text-slate-800">JPY ➔ TWD</h3>
+            <div class="bg-slate-100 p-6 rounded-3xl">
+                <input type="number" id="jpy-input" oninput="convertCurrency()" placeholder="輸入日幣金額" class="w-full bg-transparent text-center text-3xl font-black outline-none placeholder:text-slate-300">
+                <div class="h-[1px] bg-slate-200 my-4"></div>
+                <p id="twd-output" class="text-2xl font-bold text-blue-600">約 NT$ 0</p>
+            </div>
+            <p id="rate-info" class="text-[10px] text-slate-400 mt-4 italic">正在獲取最新匯率...</p>
+            <button onclick="closeExchange()" class="mt-8 w-full bg-slate-800 text-white py-4 rounded-2xl font-bold">關閉</button>
+        </div>
+    </div>
+
+    <header class="bg-gradient-to-r from-cyan-500 to-blue-600 text-white p-8 rounded-b-[2.5rem] shadow-xl">
+        <h1 class="text-2xl font-black italic">OKINAWA 2026</h1>
+        <div class="flex items-center gap-2 mt-2 font-bold text-xs bg-white/20 inline-block px-3 py-1 rounded-full">
+            <i class="fas fa-users"></i> 16大 5小 | D1-D5
+        </div>
+    </header>
+
+    <nav class="sticky top-4 mt-4 mx-4 bg-white/80 backdrop-blur-md p-1.5 flex justify-around z-50 rounded-full shadow-lg border border-white">
+        <button onclick="showDay(1)" id="btn-1" class="tab-btn py-2.5 px-5 tab-active text-xs">D1</button>
+        <button onclick="showDay(2)" id="btn-2" class="tab-btn py-2.5 px-5 text-slate-400 text-xs">D2</button>
+        <button onclick="showDay(3)" id="btn-3" class="tab-btn py-2.5 px-5 text-slate-400 text-xs">D3</button>
+        <button onclick="showDay(4)" id="btn-4" class="tab-btn py-2.5 px-5 text-slate-400 text-xs">D4</button>
+        <button onclick="showDay(5)" id="btn-5" class="tab-btn py-2.5 px-5 text-slate-400 text-xs">D5</button>
+    </nav>
+
+    <main class="max-w-md mx-auto p-6">
+        <div id="day-1" class="day-content active">
             
-            if (data && data.rates && data.rates.TWD) {
-                // 取得最新的 TWD 匯率
-                JPY_RATE = data.rates.TWD.toFixed(4);
-                
-                // 更新介面上的顯示文字（可選）
-                document.getElementById('rate-info').innerText = `目前自動匯率：${JPY_RATE}`;
-                console.log("匯率更新成功:", JPY_RATE);
+            <div class="relative">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-cyan-100 rounded-2xl flex items-center justify-center text-cyan-600 z-10 shadow-sm border-2 border-white">
+                    <i class="fas fa-plane"></i>
+                </div>
+                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
+                    <h3 class="font-black text-slate-800">06:30 桃園機場報到</h3>
+                    <p class="text-[10px] text-slate-400 mt-1">報到、海關、吃早餐</p>
+                </div>
+            </div>
+
+            <div class="logistics-line">
+                <span class="logistics-text"><i class="fas fa-clock mr-1"></i>09:35 - 12:20 飛行 MM922</span>
+            </div>
+
+            <div class="relative">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 z-10 shadow-sm border-2 border-white">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
+                    <h3 class="font-black text-slate-800">12:20 抵達那霸機場</h3>
+                    <p class="text-[10px] text-slate-400 mt-1">12:20 - 13:20 海關、拿行李</p>
+                </div>
+            </div>
+
+            <div class="logistics-line">
+                <span class="logistics-text"><i class="fas fa-utensils mr-1"></i>13:20 - 14:20 機場用餐</span>
+            </div>
+
+            <div class="relative">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 z-10 shadow-sm border-2 border-white">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
+                    <h3 class="font-black text-slate-800">14:20 領取租車 (4輛)</h3>
+                    <p class="text-[10px] text-slate-400 mt-1">14:20 - 15:20 辦理領車手續</p>
+                </div>
+            </div>
+
+            <div class="logistics-line">
+                <span class="logistics-text"><i class="fas fa-road mr-1"></i>車程 20min (15:20 - 15:40)</span>
+            </div>
+
+            <div class="relative">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-500 z-10 shadow-sm border-2 border-white">
+                    <i class="fas fa-shopping-basket"></i>
+                </div>
+                <div class="ml-14 bg-white p-6 rounded-3xl shadow-sm ring-4 ring-pink-50">
+                    <h3 class="font-black text-slate-800">15:40 西松屋補給</h3>
+                    <p class="text-xs text-pink-400 font-bold mt-1 tracking-wider">寶寶物資戰略中心</p>
+                </div>
+            </div>
+
+            <div class="logistics-line">
+                <span class="logistics-text"><i class="fas fa-road mr-1"></i>車程 40min (16:20 - 17:00)</span>
+            </div>
+
+            <div class="relative">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-slate-800 rounded-2xl flex items-center justify-center text-white z-10 shadow-sm border-2 border-white">
+                    <i class="fas fa-hotel"></i>
+                </div>
+                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
+                    <h3 class="font-black text-slate-800">17:00 入住 & 看夕陽</h3>
+                    <p class="text-[10px] text-slate-400 mt-1">Hotel Sunset Hill 休息、陽台夕陽</p>
+                </div>
+            </div>
+
+            <div class="logistics-line">
+                <span class="logistics-text"><i class="fas fa-utensils mr-1"></i>18:00 - 20:00 晚餐時間</span>
+            </div>
+
+            <div class="relative">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-indigo-900 rounded-2xl flex items-center justify-center text-white z-10 shadow-sm border-2 border-white">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="ml-14 bg-slate-800 p-6 rounded-3xl shadow-xl text-white">
+                    <h3 class="font-black text-white text-lg">21:00 自由活動 & 晚安</h3>
+                    <p class="text-xs text-slate-400 mt-1">「仲泊」海灘散步吹海風</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="day-2" class="day-content text-center py-20 text-slate-300">D2 行程待規劃...</div>
+        <div id="day-3" class="day-content text-center py-20 text-slate-300">D3 行程待規劃...</div>
+        <div id="day-4" class="day-content text-center py-20 text-slate-300">D4 行程待規劃...</div>
+        <div id="day-5" class="day-content text-center py-20 text-slate-300">D5 行程待規劃...</div>
+    </main>
+
+    <div class="fixed bottom-6 left-6 right-6 flex justify-between items-end pointer-events-none z-[90]">
+        <button onclick="openRescue()" class="pointer-events-auto bg-rose-500 text-white w-14 h-14 rounded-2xl shadow-xl flex items-center justify-center active:scale-90 transition-all border-4 border-white">
+            <i class="fas fa-baby text-xl"></i>
+        </button>
+        <button onclick="openExchange()" class="pointer-events-auto bg-blue-600 text-white w-14 h-14 rounded-2xl shadow-xl flex items-center justify-center active:scale-90 transition-all border-4 border-white">
+            <i class="fas fa-yen-sign text-xl"></i>
+        </button>
+    </div>
+
+    <script>
+        let JPY_RATE = 0.21; 
+
+        // 頁面載入自動抓匯率
+        async function updateExchangeRate() {
+            try {
+                const response = await fetch('https://open.er-api.com/v6/latest/JPY');
+                const data = await response.json();
+                if (data && data.rates && data.rates.TWD) {
+                    JPY_RATE = data.rates.TWD;
+                    document.getElementById('rate-info').innerText = `即時匯率更新成功：${JPY_RATE.toFixed(4)}`;
+                }
+            } catch (e) {
+                document.getElementById('rate-info').innerText = `使用預設匯率：${JPY_RATE} (離線模式)`;
             }
-        } catch (error) {
-            console.log("無法取得即時匯率，使用預設值:", JPY_RATE);
-            document.getElementById('rate-info').innerText = `使用預設匯率：${JPY_RATE} (離線)`;
         }
-    }
+        updateExchangeRate();
 
-    // 頁面載入時執行更新
-    updateExchangeRate();
+        function convertCurrency() {
+            const jpy = document.getElementById('jpy-input').value;
+            const twd = Math.round(jpy * JPY_RATE);
+            document.getElementById('twd-output').innerText = `約 NT$ ${twd.toLocaleString()}`;
+        }
 
-    // 換算功能邏輯
-    function convertCurrency() {
-        const jpy = document.getElementById('jpy-input').value;
-        const twd = Math.round(jpy * JPY_RATE);
-        document.getElementById('twd-output').innerText = `約 NT$ ${twd.toLocaleString()}`;
-    }
+        // 功能視窗控制
+        function openRescue() { document.getElementById('rescue-modal').style.display = 'flex'; }
+        function closeRescue() { document.getElementById('rescue-modal').style.display = 'none'; }
+        function showJapanese(tw, jp) {
+            document.getElementById('jp-card-tw').innerText = tw;
+            document.getElementById('jp-card-text').innerText = jp;
+            document.getElementById('jp-card-modal').style.display = 'flex';
+        }
+        function closeJP() { document.getElementById('jp-card-modal').style.display = 'none'; }
+        function openExchange() { 
+            document.getElementById('exchange-modal').style.display = 'flex';
+            setTimeout(() => document.getElementById('jpy-input').focus(), 100);
+        }
+        function closeExchange() { document.getElementById('exchange-modal').style.display = 'none'; }
 
-    // --- 以下保持原有的功能函數 ---
-    function openRescue() { document.getElementById('rescue-modal').style.display = 'flex'; }
-    function closeRescue() { document.getElementById('rescue-modal').style.display = 'none'; }
-    function showJapanese(tw, jp) {
-        document.getElementById('jp-card-tw').innerText = tw;
-        document.getElementById('jp-card-text').innerText = jp;
-        document.getElementById('jp-card-modal').style.display = 'flex';
-    }
-    function closeJP() { document.getElementById('jp-card-modal').style.display = 'none'; }
-    function openExchange() { 
-        document.getElementById('exchange-modal').style.display = 'flex';
-        setTimeout(() => document.getElementById('jpy-input').focus(), 100);
-    }
-    function closeExchange() { document.getElementById('exchange-modal').style.display = 'none'; }
-    function showDay(day) {
-        document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
-        document.getElementById('day-' + day).classList.add('active');
-        document.querySelectorAll('.tab-btn').forEach(el => {
-            el.classList.remove('tab-active');
-            el.classList.add('text-slate-400');
-        });
-        document.getElementById('btn-' + day).classList.add('tab-active');
-        document.getElementById('btn-' + day).classList.remove('text-slate-400');
-    }
-</script>
+        // 天數切換
+        function showDay(day) {
+            document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('day-' + day).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('tab-active');
+                el.classList.add('text-slate-400');
+            });
+            document.getElementById('btn-' + day).classList.add('tab-active');
+            document.getElementById('btn-' + day).classList.remove('text-slate-400');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
