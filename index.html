@@ -14,17 +14,64 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .tab-btn { transition: all 0.2s; border-radius: 99px; }
         .tab-active { background-color: #f59e0b; color: white; font-weight: 900; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); }
-        .logistics-text { font-size: 10px; color: #94a3b8; font-weight: 700; display: flex; items-center: center; gap: 5px; }
-        .logistics-line { border-left: 2px dashed #cbd5e1; margin-left: 19px; padding: 10px 0 10px 25px; position: relative; }
+        .logistics-text { font-size: 10px; color: #94a3b8; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+        .logistics-line { border-left: 2px dashed #cbd5e1; margin-left: 19px; padding: 10px 0 10px 25px; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-blur: 8px; }
+        .decision-card { background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%); border: 2px solid #bae6fd; }
     </style>
 </head>
 <body class="pb-32">
 
-    <div id="info-modal" class="modal-overlay" onclick="closeInfo()"><div class="bg-white rounded-[2.5rem] overflow-hidden max-w-sm w-full shadow-2xl" onclick="event.stopPropagation()"><div class="relative"><img id="modal-img" src="" class="w-full h-48 object-cover bg-slate-100"><button onclick="closeInfo()" class="absolute top-4 right-4 bg-black/30 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm">✕</button></div><div class="p-8"><h3 id="modal-title" class="text-xl font-black text-slate-800"></h3><p id="modal-desc" class="text-sm text-slate-500 mt-3 leading-relaxed"></p><a id="modal-map" href="" target="_blank" class="mt-8 flex items-center justify-center gap-2 w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-100"><i class="fas fa-location-arrow"></i> 開啟 Google Maps 導航</a></div></div></div>
-    <div id="rescue-modal" class="modal-overlay" onclick="closeRescue()"><div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-black text-rose-500"><i class="fas fa-baby mr-2"></i>育兒救援卡</h3><button onclick="closeRescue()" class="text-slate-300 text-2xl">✕</button></div><div class="space-y-4"><button onclick="showJapanese('請問哪裡有哺乳室？', '授乳室はどこにありますか？')" class="w-full text-left p-4 bg-rose-50 rounded-2xl border border-rose-100"><p class="text-sm font-bold text-rose-700">請問哪裡有哺乳室？</p></button><button onclick="showJapanese('需要熱水泡奶粉', '粉ミルク用のお湯をいただけますか？')" class="w-full text-left p-4 bg-sky-50 rounded-2xl border border-sky-100"><p class="text-sm font-bold text-sky-700">需要熱水泡奶粉</p></button><button onclick="showJapanese('有嬰兒座椅嗎？', 'ベビーチェアはありますか？')" class="w-full text-left p-4 bg-amber-50 rounded-2xl border border-amber-100"><p class="text-sm font-bold text-amber-700">有嬰兒座椅嗎？</p></button></div></div></div>
-    <div id="jp-card-modal" class="modal-overlay" onclick="closeJP()"><div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full text-center shadow-2xl" onclick="event.stopPropagation()"><p id="jp-card-tw" class="text-slate-400 text-sm mb-4"></p><p id="jp-card-text" class="text-3xl font-black text-slate-900 leading-relaxed mb-8"></p><button onclick="closeJP()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold">返回</button></div></div>
-    <div id="exchange-modal" class="modal-overlay" onclick="closeExchange()"><div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl text-center" onclick="event.stopPropagation()"><h3 class="text-xl font-black mb-6 italic text-slate-800">JPY ➔ TWD</h3><div class="bg-slate-100 p-6 rounded-3xl"><input type="number" id="jpy-input" oninput="convertCurrency()" placeholder="輸入日幣金額" class="w-full bg-transparent text-center text-3xl font-black outline-none placeholder:text-slate-300"><div class="h-[1px] bg-slate-200 my-4"></div><p id="twd-output" class="text-2xl font-bold text-blue-600">約 NT$ 0</p></div><p id="rate-info" class="text-[10px] text-slate-400 mt-4 italic text-center">同步匯率中...</p><button onclick="closeExchange()" class="mt-8 w-full bg-slate-800 text-white py-4 rounded-2xl font-bold">關閉</button></div></div>
+    <div id="info-modal" class="modal-overlay" onclick="closeInfo()">
+        <div class="bg-white rounded-[2.5rem] overflow-hidden max-w-sm w-full shadow-2xl" onclick="event.stopPropagation()">
+            <div class="relative">
+                <img id="modal-img" src="" class="w-full h-48 object-cover bg-slate-100">
+                <button onclick="closeInfo()" class="absolute top-4 right-4 bg-black/30 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm">✕</button>
+            </div>
+            <div class="p-8">
+                <h3 id="modal-title" class="text-xl font-black text-slate-800"></h3>
+                <p id="modal-desc" class="text-sm text-slate-500 mt-3 leading-relaxed"></p>
+                <a id="modal-map" href="" target="_blank" class="mt-8 flex items-center justify-center gap-2 w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-100">
+                    <i class="fas fa-location-arrow"></i> 開啟 Google Maps 導航
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="rescue-modal" class="modal-overlay" onclick="closeRescue()">
+        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-black text-rose-500"><i class="fas fa-baby mr-2"></i>育兒救援卡</h3>
+                <button onclick="closeRescue()" class="text-slate-300 text-2xl">✕</button>
+            </div>
+            <div class="space-y-4">
+                <button onclick="showJapanese('請問哪裡有哺乳室？', '授乳室はどこにありますか？')" class="w-full text-left p-4 bg-rose-50 rounded-2xl border border-rose-100"><p class="text-sm font-bold text-rose-700">請問哪裡有哺乳室？</p></button>
+                <button onclick="showJapanese('需要熱水泡奶粉', '粉ミルク用のお湯をいただけますか？')" class="w-full text-left p-4 bg-sky-50 rounded-2xl border border-sky-100"><p class="text-sm font-bold text-sky-700">需要熱水泡奶粉</p></button>
+                <button onclick="showJapanese('有嬰兒座椅嗎？', 'ベビーチェアはありますか？')" class="w-full text-left p-4 bg-amber-50 rounded-2xl border border-amber-100"><p class="text-sm font-bold text-amber-700">有嬰兒座椅嗎？</p></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="jp-card-modal" class="modal-overlay" onclick="closeJP()">
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full text-center shadow-2xl" onclick="event.stopPropagation()">
+            <p id="jp-card-tw" class="text-slate-400 text-sm mb-4"></p>
+            <p id="jp-card-text" class="text-3xl font-black text-slate-900 leading-relaxed mb-8"></p>
+            <button onclick="closeJP()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold">返回</button>
+        </div>
+    </div>
+
+    <div id="exchange-modal" class="modal-overlay" onclick="closeExchange()">
+        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl text-center" onclick="event.stopPropagation()">
+            <h3 class="text-xl font-black mb-6 italic text-slate-800">JPY ➔ TWD</h3>
+            <div class="bg-slate-100 p-6 rounded-3xl">
+                <input type="number" id="jpy-input" oninput="convertCurrency()" placeholder="輸入日幣金額" class="w-full bg-transparent text-center text-3xl font-black outline-none placeholder:text-slate-300">
+                <div class="h-[1px] bg-slate-200 my-4"></div>
+                <p id="twd-output" class="text-2xl font-bold text-blue-600">約 NT$ 0</p>
+            </div>
+            <p id="rate-info" class="text-[10px] text-slate-400 mt-4 italic text-center">正在同步最新匯率...</p>
+            <button onclick="closeExchange()" class="mt-8 w-full bg-slate-800 text-white py-4 rounded-2xl font-bold">關閉</button>
+        </div>
+    </div>
 
     <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 rounded-b-[2rem] shadow-xl sticky top-0 z-[100]">
         <h1 class="text-xl font-black tracking-tight mb-4 text-center">2026麥子必旅行程表</h1>
@@ -43,40 +90,34 @@
     </nav>
 
     <main class="max-w-md mx-auto p-6">
+        
         <div id="day-1" class="day-content active">
-            
             <div onclick="openInfo('桃園國際機場 T1', '', 'MM922 預計 09:35 起飛。建議 06:30 抵達辦理報到、過海關並享用早餐。', 'https://www.google.com/maps/search/?api=1&query=桃園國際機場')" class="relative cursor-pointer">
                 <div class="absolute left-0 top-0 w-10 h-10 bg-sky-100 rounded-2xl flex items-center justify-center text-sky-600 z-10 shadow-sm border-2 border-white"><i class="fas fa-plane"></i></div>
                 <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
-                    <h3 class="font-black text-slate-800 text-base">06:30 抵達機場 & 報到</h3>
+                    <h3 class="font-black text-slate-800">06:30 抵達機場 & 報到</h3>
                     <p class="text-[10px] text-slate-400 mt-1">報到、海關、享用早餐</p>
                 </div>
             </div>
-
-            <div class="logistics-line"><span class="logistics-text"><i class="fas fa-plane-departure"></i> 09:35 - 12:20 樂桃 MM922 飛行</span></div>
-            <div class="logistics-line"><span class="logistics-text"><i class="fas fa-id-card"></i> 12:20 - 13:20 海關、拿行李</span></div>
-
+            <div class="logistics-line"><span class="logistics-text">09:35 - 12:20 樂桃 MM922 飛行</span></div>
+            <div class="logistics-line"><span class="logistics-text">12:20 - 13:20 海關、拿行李</span></div>
             <div onclick="openInfo('那霸機場', '', '降落後可於那霸機場國內線大樓 4 樓用餐。推薦：豬肉飯糰或 A&W 漢堡。', 'https://www.google.com/maps/search/?api=1&query=那霸機場')" class="relative cursor-pointer">
                 <div class="absolute left-0 top-0 w-10 h-10 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 z-10 shadow-sm border-2 border-white"><i class="fas fa-utensils"></i></div>
                 <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
-                    <h3 class="font-black text-slate-800 text-base">13:20 機場用餐</h3>
+                    <h3 class="font-black text-slate-800">13:20 機場用餐</h3>
                     <p class="text-[10px] text-slate-400 mt-1">13:20 - 14:20 補充體力</p>
                 </div>
             </div>
-
-            <div class="logistics-line"><span class="logistics-text"><i class="fas fa-key"></i> 14:20 - 15:20 領取租車</span></div>
-            <div class="logistics-line"><span class="logistics-text"><i class="fas fa-road"></i> 15:20 - 15:40 前往補給站</span></div>
-
+            <div class="logistics-line"><span class="logistics-text">14:20 - 15:20 領取租車</span></div>
+            <div class="logistics-line"><span class="logistics-text">15:20 - 15:40 交通：往補給站</span></div>
             <div onclick="openInfo('西松屋 浦添店', '', '寶寶物資戰略中心。建議停留 40 分鐘快速採買尿布與副食品。', 'https://www.google.com/maps/search/?api=1&query=西松屋+浦添店')" class="relative cursor-pointer">
                 <div class="absolute left-0 top-0 w-10 h-10 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-500 z-10 shadow-sm border-2 border-white"><i class="fas fa-shopping-basket"></i></div>
                 <div class="ml-14 bg-white p-6 rounded-3xl shadow-sm ring-4 ring-pink-50">
-                    <h3 class="font-black text-slate-800 text-base">15:40 西松屋 (補給)</h3>
-                    <p class="text-xs text-pink-400 font-bold mt-1">戰略物資補給停留 40 分鐘</p>
+                    <h3 class="font-black text-slate-800">15:40 西松屋 (補給)</h3>
+                    <p class="text-xs text-pink-400 font-bold mt-1">停留 40 分鐘快速採買</p>
                 </div>
             </div>
-
-            <div class="logistics-line"><span class="logistics-text"><i class="fas fa-road"></i> 16:20 - 17:00 前往恩納村</span></div>
-
+            <div class="logistics-line"><span class="logistics-text">16:20 - 17:00 交通：往恩納村</span></div>
             <div onclick="openInfo('Hotel Sunset Hill', '', '恩納村公寓式飯店，17:00 入住休息，迎接 18:00 的陽台夕陽。', 'https://www.google.com/maps/search/?api=1&query=Hotel+Sunset+Hill')" class="relative cursor-pointer">
                 <div class="absolute left-0 top-0 w-10 h-10 bg-slate-800 rounded-2xl flex items-center justify-center text-white z-10 shadow-sm border-2 border-white"><i class="fas fa-hotel"></i></div>
                 <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
@@ -84,39 +125,81 @@
                     <p class="text-[10px] text-slate-400 mt-1">入住休息、看夕陽</p>
                 </div>
             </div>
-
-            <div class="logistics-line"><span class="logistics-text"><i class="fas fa-clock"></i> 18:00 - 20:00 晚餐時刻</span></div>
-
+            <div class="logistics-line"><span class="logistics-text">18:00 - 20:00 晚餐時刻</span></div>
             <div class="relative mt-2">
                 <div class="absolute left-0 top-0 w-10 h-10 bg-red-100 rounded-2xl flex items-center justify-center text-red-600 z-10 shadow-sm border-2 border-white"><i class="fas fa-utensils-pot"></i></div>
                 <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border-2 border-red-50">
                     <h3 class="font-black text-slate-800 text-base">晚餐推薦提案</h3>
                     <div class="mt-4 space-y-2">
-                        <button onclick="openInfo('仲泊海產物料理店', '', '🐟 首選推薦：榻榻米座位對寶寶友善，魚湯必點。', 'https://www.google.com/maps/search/?api=1&query=仲泊海產物料理店')" class="w-full text-left p-3 bg-red-50 rounded-xl text-xs font-bold text-red-800 flex justify-between">A. 仲泊海產物 <i class="fas fa-chevron-right text-red-200"></i></button>
-                        <button onclick="openInfo('SEA SIDE DRIVE-IN', '', '🇺🇸 美式復古風格，24H 營業，離飯店極近。', 'https://www.google.com/maps/search/?api=1&query=Sea+Side+Drive-in')" class="w-full text-left p-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-600 flex justify-between">B. SEA SIDE <i class="fas fa-chevron-right"></i></button>
-                        <button onclick="openInfo('阿古豬 涮肉 San 別墅', '', '🐷 精緻阿古豬涮涮鍋，適合長輩。', 'https://www.google.com/maps/search/?api=1&query=Shabu+Shabu+San+Villa')" class="w-full text-left p-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-600 flex justify-between">C. 涮肉 San 別墅 <i class="fas fa-chevron-right"></i></button>
+                        <button onclick="openInfo('仲泊海產物料理店', '', '🐟 首選：榻榻米座位，魚湯必點。', 'https://www.google.com/maps/search/?api=1&query=仲泊海產物料理店')" class="w-full text-left p-3 bg-red-50 rounded-xl text-xs font-bold text-red-800 flex justify-between">A. 仲泊海產物 <i class="fas fa-chevron-right text-red-200"></i></button>
+                        <button onclick="openInfo('SEA SIDE DRIVE-IN', '', '🇺🇸 復古美式，24H 營業，離飯店極近。', 'https://www.google.com/maps/search/?api=1&query=SEA+SIDE+DRIVE-IN')" class="w-full text-left p-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-600 flex justify-between">B. SEA SIDE <i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
             </div>
-
-            <div onclick="openInfo('仲泊海灘', '', '飯店步行可達。在海邊吹海風，享受第一晚的沖繩寧靜。', 'https://www.google.com/maps/search/?api=1&query=Nakadomari+Beach')" class="relative mt-8 cursor-pointer">
+            <div onclick="openInfo('仲泊海灘', '', '飯店步行可達。在海邊吹海風，享受第一晚的沖繩寧靜。', 'https://www.google.com/maps/search/?api=1&query=仲泊海灘')" class="relative mt-8 cursor-pointer">
                 <div class="absolute left-0 top-0 w-10 h-10 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 z-10 shadow-sm border-2 border-white"><i class="fas fa-umbrella-beach"></i></div>
-                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
-                    <h3 class="font-black text-slate-800 text-base">20:00 仲泊海灘散步</h3>
-                    <p class="text-[10px] text-slate-400 mt-1">自由活動、舒緩壓力</p>
-                </div>
+                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white text-base font-black">20:00 仲泊海灘散步</div>
             </div>
-
             <div class="relative mt-8">
                 <div class="absolute left-0 top-0 w-10 h-10 bg-indigo-900 rounded-2xl flex items-center justify-center text-white z-10 shadow-sm border-2 border-white"><i class="fas fa-moon"></i></div>
                 <div class="ml-14 bg-slate-800 p-6 rounded-3xl shadow-xl text-white">
                     <h3 class="font-black text-white text-lg">21:00 晚安沖繩</h3>
-                    <p class="text-xs text-slate-400 mt-1">養精蓄銳，迎接明日行程</p>
                 </div>
             </div>
         </div>
 
-        <div id="day-2" class="day-content text-center py-20 text-slate-300">D2 規劃中...</div>
+        <div id="day-2" class="day-content">
+            <div class="relative">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 z-10 shadow-sm border-2 border-white"><i class="fas fa-coffee"></i></div>
+                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
+                    <h3 class="font-black text-slate-800 text-base">08:00 起床 & 飯店早餐</h3>
+                    <p class="text-[10px] text-slate-400 mt-1">補滿體力準備前往北部</p>
+                </div>
+            </div>
+            <div class="logistics-line"><span class="logistics-text"><i class="fas fa-road"></i> 09:00 - 10:00 前往 JUNGLIA</span></div>
+            <div class="relative mb-6">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center text-white z-10 shadow-lg"><i class="fas fa-tree"></i></div>
+                <div class="ml-14 p-6 rounded-[2rem] shadow-xl decision-card">
+                    <h3 class="font-black text-emerald-900 text-lg">JUNGLIA 叢林樂園 🌴</h3>
+                    <div class="space-y-4 mt-4">
+                        <div class="bg-white/60 p-4 rounded-2xl border border-emerald-100">
+                            <span class="text-[10px] font-black text-emerald-500">10:00 - 16:30</span>
+                            <p class="text-xs font-bold text-slate-700 mt-1">體驗 2025 全新開幕自然科技設施</p>
+                        </div>
+                        <div onclick="openInfo('JUNGLIA 園內午餐', '', '於園內主題餐廳用餐，減少團體移動成本。', 'https://www.google.com/maps/search/?api=1&query=JUNGLIA')" class="bg-emerald-500 text-white p-4 rounded-2xl flex justify-between items-center cursor-pointer shadow-md">
+                            <div><p class="text-[10px] opacity-80">12:30 - 13:30</p><p class="text-sm font-black">樂園午餐時間</p></div><i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div onclick="openInfo('備案：美麗海水族館', '', '若下雨或寶寶太累，建議改往水族館。', 'https://www.google.com/maps/search/?api=1&query=美麗海水族館')" class="bg-white p-4 rounded-2xl border-2 border-dashed border-slate-300 flex justify-between items-center opacity-70 cursor-pointer">
+                            <div class="text-slate-500 italic text-xs font-bold">下雨/太累備案：水族館</div><i class="fas fa-cloud-showers-heavy text-slate-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="logistics-line"><span class="logistics-text">16:30 - 17:30 前往名護市區</span></div>
+            <div onclick="openInfo('名護市區晚餐', '', '建議於名護享用燒肉或在地料理。', 'https://www.google.com/maps/search/?api=1&query=名護市+餐廳')" class="relative cursor-pointer">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-red-100 rounded-2xl flex items-center justify-center text-red-600 z-10 shadow-sm border-2 border-white"><i class="fas fa-utensils"></i></div>
+                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
+                    <h3 class="font-black text-slate-800 text-base">17:30 晚餐時間</h3>
+                </div>
+            </div>
+            <div onclick="openInfo('大型超市補給', '', '名護 AEON 或 San-A。採買零食、飲品及嫩嬰備品。', 'https://www.google.com/maps/search/?api=1&query=AEON+名護')" class="relative mt-8 cursor-pointer">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 z-10 shadow-sm border-2 border-white"><i class="fas fa-shopping-cart"></i></div>
+                <div class="ml-14 bg-white p-5 rounded-3xl shadow-sm border border-white">
+                    <h3 class="font-black text-slate-800 text-base">19:30 物資大補給</h3>
+                </div>
+            </div>
+            <div class="logistics-line"><span class="logistics-text">21:00 - 21:30 返回飯店</span></div>
+            <div class="relative mt-4">
+                <div class="absolute left-0 top-0 w-10 h-10 bg-indigo-900 rounded-2xl flex items-center justify-center text-white z-10 shadow-sm border-2 border-white"><i class="fas fa-moon"></i></div>
+                <div class="ml-14 bg-slate-800 p-6 rounded-3xl shadow-xl text-white">
+                    <h3 class="font-black text-white text-lg">21:30 晚安</h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="day-3" class="day-content text-center py-20 text-slate-300 italic">Day 3 待規劃...</div>
+        <div id="day-4" class="day-content text-center py-20 text-slate-300 italic">Day 4 待規劃...</div>
+        <div id="day-5" class="day-content text-center py-20 text-slate-300 italic">Day 5 待規劃...</div>
     </main>
 
     <div class="fixed bottom-6 left-6 right-6 flex justify-between items-end pointer-events-none z-[90]">
@@ -125,24 +208,75 @@
     </div>
 
     <script>
-        // 更新時鐘與天氣、匯率、彈窗控制等邏輯... (與 v11.0 相同，為節省篇幅省略)
-        function updateClocks() { const now = new Date(); const options = { hour: '2-digit', minute: '2-digit', hour12: false }; document.getElementById('time-tpe').innerText = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'Asia/Taipei' }).format(now); document.getElementById('time-oka').innerText = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'Asia/Tokyo' }).format(now); }
+        function updateClocks() {
+            const now = new Date();
+            const options = { hour: '2-digit', minute: '2-digit', hour12: false };
+            document.getElementById('time-tpe').innerText = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'Asia/Taipei' }).format(now);
+            document.getElementById('time-oka').innerText = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'Asia/Tokyo' }).format(now);
+        }
         setInterval(updateClocks, 1000); updateClocks();
-        async function updateWeather() { try { const resTpe = await fetch('https://wttr.in/Taipei?format=%25t'); const tempTpe = await resTpe.text(); document.getElementById('temp-tpe').innerHTML = `<i class="fas fa-cloud-sun"></i> ${tempTpe.replace('+', '')}`; const resOka = await fetch('https://wttr.in/Okinawa?format=%25t'); const tempOka = await resOka.text(); document.getElementById('temp-oka').innerHTML = `<i class="fas fa-umbrella-beach"></i> ${tempOka.replace('+', '')}`; } catch (e) { document.getElementById('temp-tpe').innerText = "N/A"; document.getElementById('temp-oka').innerText = "N/A"; } }
+
+        async function updateWeather() {
+            try {
+                const resTpe = await fetch('https://wttr.in/Taipei?format=%25t');
+                const tempTpe = await resTpe.text();
+                document.getElementById('temp-tpe').innerHTML = `<i class="fas fa-cloud-sun"></i> ${tempTpe.replace('+', '')}`;
+                const resOka = await fetch('https://wttr.in/Okinawa?format=%25t');
+                const tempOka = await resOka.text();
+                document.getElementById('temp-oka').innerHTML = `<i class="fas fa-umbrella-beach"></i> ${tempOka.replace('+', '')}`;
+            } catch (e) {
+                document.getElementById('temp-tpe').innerText = "N/A";
+                document.getElementById('temp-oka').innerText = "N/A";
+            }
+        }
         updateWeather();
+
         let JPY_RATE = 0.21;
-        async function updateExchangeRate() { try { const response = await fetch('https://open.er-api.com/v6/latest/JPY'); const data = await response.json(); if (data && data.rates && data.rates.TWD) { JPY_RATE = data.rates.TWD; document.getElementById('rate-info').innerText = `即時匯率：${JPY_RATE.toFixed(4)}`; } } catch (e) { document.getElementById('rate-info').innerText = `預設匯率：${JPY_RATE}`; } }
+        async function updateExchangeRate() {
+            try {
+                const response = await fetch('https://open.er-api.com/v6/latest/JPY');
+                const data = await response.json();
+                if (data && data.rates && data.rates.TWD) {
+                    JPY_RATE = data.rates.TWD;
+                    document.getElementById('rate-info').innerText = `即時匯率：${JPY_RATE.toFixed(4)}`;
+                }
+            } catch (e) { document.getElementById('rate-info').innerText = `使用預設匯率：${JPY_RATE}`; }
+        }
         updateExchangeRate();
-        function convertCurrency() { const jpy = document.getElementById('jpy-input').value; const twd = Math.round(jpy * JPY_RATE); document.getElementById('twd-output').innerText = `約 NT$ ${twd.toLocaleString()}`; }
-        function openInfo(title, img, desc, map) { document.getElementById('modal-title').innerText = title; document.getElementById('modal-img').src = img || 'https://placehold.co/600x400?text=' + encodeURIComponent(title); document.getElementById('modal-desc').innerText = desc; document.getElementById('modal-map').href = map; document.getElementById('info-modal').style.display = 'flex'; }
+
+        function convertCurrency() {
+            const jpy = document.getElementById('jpy-input').value;
+            const twd = Math.round(jpy * JPY_RATE);
+            document.getElementById('twd-output').innerText = `約 NT$ ${twd.toLocaleString()}`;
+        }
+
+        function openInfo(title, img, desc, map) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-img').src = img || 'https://placehold.co/600x400?text=' + encodeURIComponent(title);
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('modal-map').href = map;
+            document.getElementById('info-modal').style.display = 'flex';
+        }
         function closeInfo() { document.getElementById('info-modal').style.display = 'none'; }
         function openRescue() { document.getElementById('rescue-modal').style.display = 'flex'; }
         function closeRescue() { document.getElementById('rescue-modal').style.display = 'none'; }
-        function showJapanese(tw, jp) { document.getElementById('jp-card-tw').innerText = tw; document.getElementById('jp-card-text').innerText = jp; document.getElementById('jp-card-modal').style.display = 'flex'; }
+        function showJapanese(tw, jp) {
+            document.getElementById('jp-card-tw').innerText = tw;
+            document.getElementById('jp-card-text').innerText = jp;
+            document.getElementById('jp-card-modal').style.display = 'flex';
+        }
         function closeJP() { document.getElementById('jp-card-modal').style.display = 'none'; }
         function openExchange() { document.getElementById('exchange-modal').style.display = 'flex'; setTimeout(() => document.getElementById('jpy-input').focus(), 100); }
         function closeExchange() { document.getElementById('exchange-modal').style.display = 'none'; }
-        function showDay(day) { document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active')); document.getElementById('day-' + day).classList.add('active'); document.querySelectorAll('.tab-btn').forEach(el => { el.classList.remove('tab-active'); el.classList.add('text-slate-400'); }); document.getElementById('btn-' + day).classList.add('tab-active'); document.getElementById('btn-' + day).classList.remove('text-slate-400'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        function showDay(day) {
+            document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('day-' + day).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(el => { el.classList.remove('tab-active'); el.classList.add('text-slate-400'); });
+            document.getElementById('btn-' + day).classList.add('tab-active');
+            document.getElementById('btn-' + day).classList.remove('text-slate-400');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>
