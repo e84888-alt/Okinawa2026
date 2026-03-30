@@ -7,158 +7,196 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Montserrat:wght@800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Montserrat:wght@700;900&display=swap');
         
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f1f5f9; color: #1e293b; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+        body { font-family: 'Noto Sans TC', 'Montserrat', sans-serif; background-color: #f0f6fc; color: #1e293b; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
 
-        /* 高對比 Header - 確保文字陰影與對比度 */
-        .header-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); }
-        .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        /* 極致精簡單列 Header */
+        .top-dashboard {
+            position: sticky; top: 0; z-index: 1000;
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 10px 16px;
+        }
+
+        .header-content { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .logo-text { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; color: white; font-size: 14px; letter-spacing: -1px; }
         
-        .glass-dark { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15); }
+        .weather-pill {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 4px 10px;
+            display: flex; align-items: center; gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .val-time { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 12px; color: #fff; }
+        .val-temp { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 10px; color: rgba(255,255,255,0.7); }
+        .label-city { font-size: 8px; font-weight: 900; color: rgba(255,255,255,0.5); }
+
+        /* 天數標籤列 */
+        .sticky-tabs {
+            background: rgba(255, 255, 255, 0.98);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 6px 16px;
+            display: flex; gap: 6px;
+            position: sticky; top: 44px; z-index: 999;
+        }
+        .tab-btn {
+            flex: 1; padding: 8px 0; border-radius: 12px; font-size: 12px; font-weight: 900; color: #94a3b8; transition: all 0.2s;
+        }
+        .tab-active { background: #ffbf00; color: #1e3a8a; box-shadow: 0 4px 10px rgba(255, 191, 0, 0.3); transform: scale(1.05); }
+
+        /* 行程內容 */
+        .itinerary-card {
+            background: white; border-radius: 20px; padding: 16px; margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #fff; transition: transform 0.2s;
+        }
+        .itinerary-card:active { transform: scale(0.97); }
+
+        /* 類型側邊線 */
+        .card-play { border-left: 5px solid #10b981; }
+        .card-food { border-left: 5px solid #f59e0b; }
+        .card-stay { border-left: 5px solid #6366f1; }
+        .card-shop { border-left: 5px solid #ec4899; }
+        .card-transport { border-left: 5px solid #0ea5e9; }
+
+        /* 物流虛線膠囊 */
+        .logistics-wrap { position: relative; padding-left: 2rem; margin: 1rem 0; }
+        .logistics-wrap::before { content: ''; position: absolute; left: 0.8rem; top: -1rem; bottom: -1rem; width: 2px; background: #e2e8f0; }
+        .time-pill { 
+            background: #fff; border: 1.5px solid #e0f2fe; color: #3b82f6; 
+            font-size: 9px; font-weight: 900; padding: 1px 8px; border-radius: 50px; 
+            margin-bottom: 4px; display: inline-block; font-family: 'Montserrat', sans-serif;
+        }
 
         .day-content { display: none; }
-        .day-content.active { display: block; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .day-content.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
-        .tab-btn { transition: all 0.2s; min-width: 60px; }
-        .tab-active { background: #fff !important; color: #1e3a8a !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transform: scale(1.05); }
-
-        /* 物流虛線排版優化：防止超出螢幕 */
-        .logistics-row { position: relative; padding-left: 2rem; margin: 1.5rem 0; width: 100%; }
-        .logistics-row::before { content: ''; position: absolute; left: 0.75rem; top: -1rem; bottom: -1rem; width: 2px; background: repeating-linear-gradient(to bottom, #cbd5e1, #cbd5e1 4px, transparent 4px, transparent 8px); }
-        .logistics-time-tag { display: inline-block; background: #e2e8f0; color: #64748b; font-size: 9px; font-weight: 800; padding: 2px 8px; rounded-full: 99px; border-radius: 99px; margin-bottom: 4px; }
-
-        .itinerary-card { border-left: 6px solid transparent; overflow: hidden; word-break: break-all; }
-        .type-play { border-left-color: #10b981; }
-        .type-food { border-left-color: #f59e0b; }
-        .type-stay { border-left-color: #6366f1; }
-        .type-shop { border-left-color: #ec4899; }
-        .type-transport { border-left-color: #0ea5e9; }
-
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 2000; align-items: flex-end; justify-content: center; backdrop-blur: 5px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="pb-32">
 
-    <header class="header-gradient text-white pt-10 pb-12 px-6 rounded-b-[2.5rem] shadow-2xl sticky top-0 z-[1000] overflow-hidden">
-        <div class="flex justify-between items-center mb-6 relative">
-            <h1 style="font-family: 'Montserrat', sans-serif;" class="text-2xl font-black italic tracking-tighter text-shadow">OKINAWA 2026</h1>
-            <div class="bg-amber-400 text-blue-900 px-3 py-1 rounded-full text-[10px] font-black shadow-lg">16大 5小</div>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-3 relative">
-            <div class="glass-dark p-3 rounded-2xl">
-                <p class="text-[9px] font-black text-blue-200 uppercase mb-1 tracking-widest text-center opacity-80">Taipei 台北</p>
-                <div class="flex justify-center items-center gap-2">
-                    <span id="time-tpe" class="text-xl font-black tracking-tight">--:--</span>
-                    <span id="temp-tpe" class="text-[10px] font-bold text-white/90">--°C</span>
+    <div class="top-dashboard">
+        <div class="header-content">
+            <div class="logo-text">OKINAWA 2026</div>
+            <div class="flex gap-2">
+                <div class="weather-pill">
+                    <span class="label-city">TPE</span>
+                    <span id="time-tpe" class="val-time">--:--</span>
+                    <span id="temp-tpe" class="val-temp">--°</span>
                 </div>
-            </div>
-            <div class="glass-dark p-3 rounded-2xl">
-                <p class="text-[9px] font-black text-orange-200 uppercase mb-1 tracking-widest text-center opacity-80">Okinawa 沖繩</p>
-                <div class="flex justify-center items-center gap-2">
-                    <span id="time-oka" class="text-xl font-black tracking-tight">--:--</span>
-                    <span id="temp-oka" class="text-[10px] font-bold text-white/90">--°C</span>
+                <div class="weather-pill">
+                    <span class="label-city">OKA</span>
+                    <span id="time-oka" class="val-time">--:--</span>
+                    <span id="temp-oka" class="val-temp">--°</span>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 
-    <nav class="sticky top-[195px] z-[900] -mt-6 mx-6 flex bg-slate-200/80 p-1.5 rounded-full backdrop-blur-lg shadow-xl border border-white/30">
-        <div id="day-tabs" class="flex w-full justify-between gap-1"></div>
+    <nav class="sticky-tabs no-scrollbar">
+        <div id="day-tabs" class="flex w-full justify-between gap-1.5"></div>
     </nav>
 
-    <main id="main-content" class="px-5 mt-10 max-w-md mx-auto"></main>
+    <main id="main-content" class="px-5 mt-6 max-w-md mx-auto"></main>
 
-    <div id="info-modal" class="modal-overlay" onclick="closeInfo()">
-        <div class="bg-white rounded-t-[2.5rem] w-full max-w-md shadow-2xl p-8 pb-12" onclick="event.stopPropagation()">
-            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
-            <h3 id="modal-title" class="text-2xl font-black text-slate-800 mb-3 tracking-tight"></h3>
-            <p id="modal-desc" class="text-slate-500 text-sm leading-relaxed mb-10"></p>
-            <a id="modal-map" href="" target="_blank" class="flex items-center justify-center gap-3 w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-transform">
-                <i class="fas fa-location-arrow"></i> 開啟 GOOGLE MAPS
+    <div id="info-modal" class="fixed inset-0 bg-black/70 z-[2000] hidden items-end justify-center backdrop-blur-sm" onclick="closeInfo()">
+        <div class="bg-white rounded-t-[2.5rem] w-full max-w-md p-8 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            <h3 id="modal-title" class="text-xl font-black text-slate-800 mb-2"></h3>
+            <p id="modal-desc" class="text-slate-500 text-sm leading-relaxed mb-8"></p>
+            <a id="modal-map" href="" target="_blank" class="flex items-center justify-center gap-3 w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">
+                <i class="fas fa-location-arrow"></i> 開啟地圖導航
             </a>
         </div>
     </div>
 
-    <div class="fixed bottom-8 left-0 right-0 px-8 flex justify-between items-end pointer-events-none z-[1000]">
-        <button onclick="openRescue()" class="pointer-events-auto w-16 h-16 bg-rose-500 text-white rounded-3xl shadow-xl flex items-center justify-center text-2xl active:scale-90 border-4 border-white"><i class="fas fa-baby"></i></button>
-        <button onclick="openExchange()" class="pointer-events-auto w-16 h-16 bg-blue-600 text-white rounded-3xl shadow-xl flex items-center justify-center text-2xl active:scale-90 border-4 border-white"><i class="fas fa-yen-sign"></i></button>
+    <div class="fixed bottom-6 left-0 right-0 px-8 flex justify-between items-end pointer-events-none z-[1000]">
+        <button onclick="openRescue()" class="pointer-events-auto w-14 h-14 bg-rose-500 text-white rounded-2xl shadow-xl flex items-center justify-center text-xl active:scale-90 border-4 border-white"><i class="fas fa-baby"></i></button>
+        <button onclick="openExchange()" class="pointer-events-auto w-14 h-14 bg-blue-600 text-white rounded-2xl shadow-xl flex items-center justify-center text-xl active:scale-90 border-4 border-white"><i class="fas fa-yen-sign"></i></button>
     </div>
 
-    <div id="rescue-modal" class="modal-overlay" onclick="this.style.display='none'"><div class="bg-white rounded-t-[2.5rem] p-8 pb-12 w-full max-w-md" onclick="event.stopPropagation()">
-        <h3 class="text-xl font-black text-rose-500 mb-6 italic"><i class="fas fa-baby mr-2"></i>育兒救援卡</h3>
-        <div class="grid gap-3">
-            <button onclick="showJP('哺乳室？','授乳室はどこにありますか？')" class="w-full text-left p-4 bg-rose-50 rounded-2xl font-bold text-rose-700">尋找哺乳室</button>
-            <button onclick="showJP('需要熱水？','粉ミルク用のお湯をいただけますか？')" class="w-full text-left p-4 bg-sky-50 rounded-2xl font-bold text-sky-700">需要泡奶熱水</button>
-            <button onclick="showJP('嬰兒座椅？','ベビーチェアはありますか？')" class="w-full text-left p-4 bg-amber-50 rounded-2xl font-bold text-amber-700">有嬰兒座椅嗎？</button>
+    <div id="rescue-modal" class="fixed inset-0 bg-black/60 z-[2000] hidden items-end justify-center" onclick="this.classList.add('hidden')">
+        <div class="bg-white rounded-t-[2.5rem] p-8 pb-12 w-full max-w-md" onclick="event.stopPropagation()">
+            <h3 class="text-xl font-black text-rose-500 mb-6 italic flex items-center gap-2"><i class="fas fa-baby"></i> 育兒救援卡</h3>
+            <div class="grid gap-3">
+                <button onclick="showJP('哺乳室？','授乳室はどこにありますか？')" class="w-full text-left p-4 bg-rose-50 rounded-xl font-black text-rose-700">尋找哺乳室</button>
+                <button onclick="showJP('需要熱水','粉ミルク用のお湯をいただけますか？')" class="w-full text-left p-4 bg-sky-50 rounded-xl font-black text-sky-700">需要熱水泡奶</button>
+                <button onclick="showJP('嬰兒座椅','ベビーチェアはありますか？')" class="w-full text-left p-4 bg-amber-50 rounded-xl font-black text-amber-700">有嬰兒座椅嗎？</button>
+            </div>
         </div>
-    </div></div>
+    </div>
     
-    <div id="exchange-modal" class="modal-overlay" onclick="this.style.display='none'"><div class="bg-white rounded-t-[2.5rem] p-8 pb-12 w-full max-w-md text-center" onclick="event.stopPropagation()">
-        <h3 class="font-black mb-4">日幣換算 (JPY ➔ TWD)</h3>
-        <input type="number" id="jpy-input" oninput="convertCurr()" placeholder="輸入金額" class="w-full bg-slate-100 p-6 rounded-3xl text-3xl font-black text-center outline-none">
-        <p id="twd-output" class="text-2xl font-bold text-blue-600 mt-4 tracking-tight">約 NT$ 0</p>
-    </div></div>
+    <div id="exchange-modal" class="fixed inset-0 bg-black/60 z-[2000] hidden items-center justify-center px-6" onclick="this.classList.add('hidden')">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-xs text-center" onclick="event.stopPropagation()">
+            <h3 class="font-black text-lg mb-6">JPY ➔ TWD</h3>
+            <input type="number" id="jpy-input" oninput="convertCurr()" placeholder="輸入日幣" class="w-full bg-slate-100 p-5 rounded-2xl text-3xl font-black text-blue-600 text-center outline-none">
+            <p id="twd-output" class="text-xl font-black text-slate-400 mt-6 tracking-tight">約 NT$ 0</p>
+        </div>
+    </div>
 
-    <div id="jp-modal" class="modal-overlay" onclick="this.style.display='none'"><div class="bg-white rounded-t-[2.5rem] p-12 w-full max-w-md text-center" onclick="event.stopPropagation()">
-        <p id="jp-tw" class="text-slate-400 text-sm font-bold mb-4"></p><p id="jp-text" class="text-3xl font-black text-slate-900 leading-snug"></p>
-    </div></div>
+    <div id="jp-modal" class="fixed inset-0 bg-black/95 z-[3000] hidden items-center justify-center p-8" onclick="this.classList.add('hidden')">
+        <div class="text-center">
+            <p id="jp-tw" class="text-white/40 text-sm font-bold mb-4 uppercase"></p>
+            <p id="jp-text" class="text-4xl font-black text-white leading-snug"></p>
+        </div>
+    </div>
 
     <script>
-        // ======= 【核心資料庫】 =======
+        // ======= 【核心行程資料庫 - 嚴格拆分天數】 =======
         const itineraryData = [
             {
                 day: 1, date: "9/14",
                 events: [
-                    { time: "06:30", type: "transport", title: "桃園機場 T1 報到", desc: "MM922 (09:35起飛)。建議 06:30 抵達辦理報到、享用早餐。", icon: "fa-plane", map: "https://www.google.com/maps/search/?api=1&query=桃園國際機場第一航廈" },
+                    { time: "06:30", type: "transport", title: "桃園機場 T1 報到", desc: "建議 06:30 集合辦理報到、過海關並享用早餐。", icon: "fa-plane", map: "https://www.google.com/maps/search/?api=1&query=桃園國際機場第一航廈" },
                     { time: "09:35-12:20", type: "logistics", title: "飛行時間 (MM922)", icon: "fa-plane-departure" },
-                    { time: "12:20-13:20", type: "logistics", title: "海關入境、領取行李", icon: "fa-passport" },
-                    { time: "13:20", type: "food", title: "那霸機場午餐", desc: "國內線 1F 豬肉飯糰或 A&W 漢堡。21人建議分開帶開用餐。", icon: "fa-utensils", map: "https://www.google.com/maps/search/?api=1&query=那霸機場" },
-                    { time: "14:20-15:40", type: "logistics", title: "領取租車 & 接駁手續", icon: "fa-key" },
-                    { time: "15:40", type: "shop", title: "西松屋 (戰略補給)", desc: "浦添店。採買尿布、副食品。第一天最重要的後勤站。", icon: "fa-shopping-basket", map: "https://www.google.com/maps/search/?api=1&query=西松屋+浦添店" },
-                    { time: "16:20-17:00", type: "logistics", title: "車程：前往恩納村飯店", icon: "fa-road" },
-                    { time: "17:00", type: "stay", title: "Hotel Sunset Hill 入住", desc: "辦理入住，享受 18:00 陽台夕陽。", icon: "fa-hotel", map: "https://www.google.com/maps/search/?api=1&query=Hotel+Sunset+Hill+沖繩" },
-                    { time: "18:00", type: "food", title: "D1 晚餐三選一", desc: "請選擇餐廳開啟導航：", icon: "fa-utensils-pot", options: [
+                    { time: "12:20-13:20", type: "logistics", title: "海關入境手續", icon: "fa-passport" },
+                    { time: "13:20", type: "food", title: "那霸機場午餐", desc: "推薦國內線 1F 豬肉飯糰或 A&W 漢堡。", icon: "fa-utensils", map: "https://www.google.com/maps/search/?api=1&query=那霸機場" },
+                    { time: "14:20-15:40", type: "logistics", title: "領取租車與接駁", icon: "fa-key" },
+                    { time: "15:40", type: "shop", title: "西松屋 浦添店", desc: "戰略補給：尿布、副食品。建議停留 40 分鐘。", icon: "fa-shopping-basket", map: "https://www.google.com/maps/search/?api=1&query=西松屋+浦添店" },
+                    { time: "16:20-17:00", type: "logistics", title: "往恩納村飯店 (車程40分)", icon: "fa-road" },
+                    { time: "17:00", type: "stay", title: "Hotel Sunset Hill 入住", desc: "辦理入住，享受陽台夕陽時光。", icon: "fa-hotel", map: "https://www.google.com/maps/search/?api=1&query=Hotel+Sunset+Hill+沖繩" },
+                    { time: "18:00", type: "food", title: "晚餐三選一 (仲泊區)", desc: "請選擇餐廳按鈕開啟導航：", icon: "fa-utensils-pot", options: [
                         { name: "仲泊海產物 (榻榻米)", map: "https://www.google.com/maps/search/?api=1&query=仲泊海產物料理店" },
                         { name: "SEA SIDE (美式復古)", map: "https://www.google.com/maps/search/?api=1&query=SEA+SIDE+DRIVE-IN" },
                         { name: "涮肉 San 別墅 (阿古豬)", map: "https://www.google.com/maps/search/?api=1&query=阿古豬+涮肉+San+別墅" }
                     ]},
-                    { time: "20:00", type: "play", title: "仲泊海灘 散步", desc: "飯店步行可達。享受沖繩第一晚的海風。", icon: "fa-umbrella-beach", map: "https://www.google.com/maps/search/?api=1&query=仲泊海濱" },
-                    { time: "21:00", type: "logistics", title: "晚安沖繩", icon: "fa-moon" }
+                    { time: "20:00", type: "play", title: "仲泊海灘 散步", desc: "飯店步行可達，吹海風享受第一晚。", icon: "fa-umbrella-beach", map: "https://www.google.com/maps/search/?api=1&query=仲泊海濱" }
                 ]
             },
             {
                 day: 2, date: "9/15",
                 events: [
-                    { time: "08:00", type: "food", title: "飯店早餐時刻", desc: "補滿體力準備前往北部 JUNGLIA。", icon: "fa-bread-slice" },
-                    { time: "09:00-10:00", type: "logistics", title: "車程：前往 JUNGLIA", icon: "fa-road" },
-                    { time: "10:00", type: "play", title: "JUNGLIA 叢林冒險 (上午)", desc: "恐龍探險越野車、高空飛索。嫩嬰推車可、電車推薦。", icon: "fa-tree", map: "https://www.google.com/maps/search/?api=1&query=JUNGLIA+沖繩" },
-                    { time: "12:30", type: "food", title: "Panorama Dining 午餐", desc: "鳥巢座席。鄰近育嬰空間，方便換奶/換尿布。", icon: "fa-utensils", map: "https://www.google.com/maps/search/?api=1&query=JUNGLIA+Restaurant" },
-                    { time: "13:30", type: "play", title: "JUNGLIA 視野探索 (下午)", desc: "熱氣球、山原龍捲風。SPA 溫泉浴放鬆。", icon: "fa-cloud-sun" },
-                    { time: "16:30-17:30", type: "logistics", title: "車程：往南部移動", icon: "fa-road" },
-                    { time: "17:30", type: "food", title: "D2 名護晚餐三選一", desc: "請選擇餐廳：", icon: "fa-utensils", options: [
-                        { name: "HAMA 濱壽司 (大空間)", map: "https://www.google.com/maps/search/?api=1&query=濱壽司+名護店" },
+                    { time: "08:00", type: "food", title: "飯店早餐", desc: "在 Hotel Sunset Hill 享用早餐補滿體力。", icon: "fa-bread-slice" },
+                    { time: "09:00-10:00", type: "logistics", title: "往北部 JUNGLIA (1小時)", icon: "fa-road" },
+                    { time: "10:00", type: "play", title: "JUNGLIA 上午場", desc: "恐龍探險、高空飛索。長輩與嫩嬰建議搭電車。", icon: "fa-tree", map: "https://www.google.com/maps/search/?api=1&query=JUNGLIA+沖繩" },
+                    { time: "12:30", type: "food", title: "Panorama Dining 午餐", desc: "著名的鳥巢座席，鄰近育嬰空間。", icon: "fa-utensils", map: "https://www.google.com/maps/search/?api=1&query=JUNGLIA+Restaurant" },
+                    { time: "13:30", type: "play", title: "JUNGLIA 下午場", desc: "巨型熱氣球、山原龍捲風、SPA 溫泉浴。", icon: "fa-cloud-sun" },
+                    { time: "16:30-17:30", type: "logistics", title: "往南移動至名護市區", icon: "fa-road" },
+                    { time: "17:30", type: "food", title: "名護名店三選一", desc: "請選擇餐廳：", icon: "fa-utensils", options: [
+                        { name: "HAMA 濱壽司", map: "https://www.google.com/maps/search/?api=1&query=濱壽司+名護店" },
                         { name: "燒肉本部牧場 (和牛)", map: "https://www.google.com/maps/search/?api=1&query=燒肉本部牧場+名護店" },
-                        { name: "Maasan (居酒屋)", map: "https://www.google.com/maps/search/?api=1&query=Maasan+名護" }
+                        { name: "Maasan (質感居酒屋)", map: "https://www.google.com/maps/search/?api=1&query=Maasan+名護" }
                     ]},
-                    { time: "19:30", type: "shop", title: "MEGA 唐吉訶德 名護店", desc: "補給零食、備品。全沖繩最好逛分店之一。", icon: "fa-shopping-cart", map: "https://www.google.com/maps/search/?api=1&query=MEGA+唐吉訶德+名護店" },
-                    { time: "21:30", type: "logistics", title: "晚安", icon: "fa-moon" }
+                    { time: "19:30", type: "shop", title: "MEGA 唐吉訶德 名護店", desc: "補給物資，採買備品與零食。", icon: "fa-shopping-cart", map: "https://www.google.com/maps/search/?api=1&query=MEGA+唐吉訶德+名護店" },
+                    { time: "21:00-21:30", type: "logistics", title: "返回飯店休息", icon: "fa-moon" }
                 ]
             },
             {
                 day: 3, date: "9/16",
                 events: [
-                    { time: "08:30", type: "stay", title: "退房與行李大裝載", desc: "離開 Hotel Sunset Hill。行李較多請提前裝車。", icon: "fa-sign-out-alt" },
-                    { time: "09:30-10:30", type: "logistics", title: "車程：前往本部町", icon: "fa-road" },
-                    { time: "10:30", type: "play", title: "美麗海水族館", desc: "黑潮之海震撼、13:00有海豚秀。推車全程友善。", icon: "fa-fish", map: "https://www.google.com/maps/search/?api=1&query=美麗海水族館" },
-                    { time: "13:30-14:30", type: "logistics", title: "午餐：本部町在地料理", icon: "fa-utensils" },
-                    { time: "14:30", type: "play", title: "古宇利大橋 (絕景)", desc: "最美跨海大橋。橋頭展望台拍合照。", icon: "fa-camera", map: "https://www.google.com/maps/search/?api=1&query=古宇利大橋" },
-                    { time: "15:30-17:00", type: "logistics", title: "車程：跨區南下", icon: "fa-road" },
-                    { time: "17:00", type: "food", title: "美濱美國村 (夕陽)", desc: "落日步道散步、自由購物晚餐。", icon: "fa-sun", map: "https://www.google.com/maps/search/?api=1&query=美國村" },
-                    { time: "19:30-20:30", type: "logistics", title: "車程：前往那霸市區", icon: "fa-car-side" },
-                    { time: "20:30", type: "stay", title: "入住 OMO5 沖繩那霸", desc: "那霸市中心。鄰近國際通。", icon: "fa-hotel", map: "https://www.google.com/maps/search/?api=1&query=OMO5+沖繩那霸" },
+                    { time: "08:30-09:30", type: "stay", title: "飯店退房 & 裝載行李", desc: "離開 Hotel Sunset Hill，確認行李大工程。", icon: "fa-sign-out-alt" },
+                    { time: "09:30-10:30", type: "logistics", title: "前往北部本部町", icon: "fa-road" },
+                    { time: "10:30-13:30", type: "play", title: "美麗海水族館", desc: "鯨鯊震撼。13:00海豚秀。推車友善。", icon: "fa-fish", map: "https://www.google.com/maps/search/?api=1&query=美麗海水族館" },
+                    { time: "13:30-14:30", type: "logistics", title: "本部町午餐時段", icon: "fa-utensils" },
+                    { time: "14:30-15:30", type: "play", title: "古宇利大橋 (絕景)", desc: "沖繩最美跨海橋，橋頭拍團體大合照。", icon: "fa-camera", map: "https://www.google.com/maps/search/?api=1&query=古宇利大橋" },
+                    { time: "15:30-17:00", type: "logistics", title: "跨區南下大移動", icon: "fa-road" },
+                    { time: "17:00-19:30", type: "play", title: "美國村 夕陽與晚餐", desc: "夕陽散步、自由購物與分組晚餐。", icon: "fa-sun", map: "https://www.google.com/maps/search/?api=1&query=美國村" },
+                    { time: "19:30-20:30", type: "logistics", title: "前往那霸市區", icon: "fa-car-side" },
+                    { time: "20:30-21:00", type: "stay", title: "入住 OMO5 沖繩那霸", desc: "進駐市中心。辦理入住手續。", icon: "fa-hotel", map: "https://www.google.com/maps/search/?api=1&query=OMO5+沖繩那霸" },
                     { time: "21:00", type: "logistics", title: "晚安那霸", icon: "fa-moon" }
                 ]
             }
@@ -166,87 +204,86 @@
 
         // ======= 【UI 渲染引擎】 =======
         function renderUI() {
-            const tabContainer = document.getElementById('day-tabs');
-            const mainContainer = document.getElementById('main-content');
-            
+            const tabs = document.getElementById('day-tabs');
+            const main = document.getElementById('main-content');
             itineraryData.forEach((d, idx) => {
                 const btn = document.createElement('button');
                 btn.id = `btn-${d.day}`;
-                btn.className = `tab-btn flex-1 py-3 text-xs font-black rounded-full text-slate-500 ${idx===0?'tab-active':''}`;
-                btn.innerHTML = `Day ${d.day}<span class="block text-[8px] font-normal opacity-60">${d.date}</span>`;
+                btn.className = `tab-btn ${idx===0?'tab-active':''}`;
+                btn.innerHTML = `Day ${d.day}<span class="block text-[8px] font-normal opacity-60 mt-0.5">${d.date}</span>`;
                 btn.onclick = () => showDay(d.day);
-                tabContainer.appendChild(btn);
+                tabs.appendChild(btn);
 
                 const section = document.createElement('div');
                 section.id = `day-${d.day}`;
                 section.className = `day-content ${idx===0?'active':''}`;
-                
                 d.events.forEach(e => {
                     if (e.type === 'logistics') {
                         section.innerHTML += `
-                            <div class="logistics-row">
-                                <span class="logistics-time-tag">${e.time}</span>
-                                <div class="text-[11px] font-black text-slate-400 flex items-center gap-2">
-                                    <i class="fas ${e.icon}"></i> ${e.title}
+                            <div class="logistics-wrap">
+                                <span class="time-pill">${e.time}</span>
+                                <div class="text-[10px] font-black text-slate-400 flex items-center gap-2">
+                                    <i class="fas ${e.icon} opacity-30"></i> ${e.title}
                                 </div>
                             </div>`;
                     } else {
-                        let optionsHtml = '';
+                        let opts = '';
                         if (e.options) {
-                            optionsHtml = `<div class="grid gap-2 mt-4">` + 
-                                e.options.map(opt => `
-                                    <button onclick="window.open('${opt.map}')" class="w-full text-left p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-black text-slate-600 flex justify-between items-center active:bg-slate-100">
-                                        <span class="truncate pr-2">${opt.name}</span> <i class="fas fa-location-dot text-slate-300"></i>
-                                    </button>
-                                `).join('') + `</div>`;
+                            opts = `<div class="grid gap-2 mt-4">` + e.options.map(opt => `
+                                <button onclick="window.open('${opt.map}')" class="w-full text-left p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-xs font-black text-blue-800 flex justify-between items-center active:bg-blue-100 shadow-sm">
+                                    <span>${opt.name}</span> <i class="fas fa-location-arrow text-blue-400 text-[10px]"></i>
+                                </button>
+                            `).join('') + `</div>`;
                         }
-
                         section.innerHTML += `
-                            <div onclick="${e.options?'':`openInfo('${e.title}','','${e.desc}','${e.map||''}')`}" class="bg-white rounded-[2rem] p-5 shadow-sm border border-white mb-4 itinerary-card type-${e.type} cursor-pointer">
+                            <div onclick="${e.options?'':`openInfo('${e.title}','','${e.desc}','${e.map||''}')`}" class="itinerary-card card-${e.type} cursor-pointer">
                                 <div class="flex gap-4">
-                                    <div class="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0"><i class="fas ${e.icon}"></i></div>
+                                    <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0"><i class="fas ${e.icon}"></i></div>
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex justify-between items-center"><span class="text-[9px] font-black tracking-widest text-slate-300 uppercase">${e.time}</span><i class="fas fa-chevron-right text-[10px] text-slate-200"></i></div>
-                                        <h3 class="font-black text-slate-800 tracking-tight truncate">${e.title}</h3>
-                                        <p class="text-xs text-slate-400 mt-1 font-medium leading-relaxed">${e.desc || ''}</p>
-                                        ${optionsHtml}
+                                        <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest">${e.time}</span>
+                                        <h3 class="font-black text-slate-800 text-base tracking-tight truncate mt-0.5">${e.title}</h3>
+                                        <p class="text-[11px] text-slate-400 mt-0.5 font-medium leading-relaxed">${e.desc || ''}</p>
+                                        ${opts}
                                     </div>
                                 </div>
                             </div>`;
                     }
                 });
-                mainContainer.appendChild(section);
+                main.appendChild(section);
             });
         }
 
-        // ======= 【核心功能】 =======
+        // ======= 【功能邏輯】 =======
         let JPY_RATE = 0.212;
-        async function updateExchangeRate() {
-            try { const res = await fetch('https://open.er-api.com/v6/latest/JPY'); const data = await res.json(); if(data.rates.TWD) JPY_RATE = data.rates.TWD; document.getElementById('rate-info').innerText = `即時匯率：${JPY_RATE.toFixed(4)}`; } catch(e) {}
-        }
-        function convertCurr() { const jpy = document.getElementById('jpy-input').value; document.getElementById('twd-output').innerText = `約 NT$ ${Math.round(jpy * JPY_RATE).toLocaleString()}`; }
-        function openInfo(t,i,d,m) { document.getElementById('modal-title').innerText=t; document.getElementById('modal-desc').innerText=d; document.getElementById('modal-map').href=m; document.getElementById('info-modal').style.display='flex'; }
-        function closeInfo() { document.getElementById('info-modal').style.display='none'; }
-        function openRescue() { document.getElementById('rescue-modal').style.display='flex'; }
-        function openExchange() { document.getElementById('exchange-modal').style.display='flex'; setTimeout(()=>document.getElementById('jpy-input').focus(),300); }
-        function showJP(tw, jp) { document.getElementById('jp-tw').innerText=tw; document.getElementById('jp-text').innerText=jp; document.getElementById('jp-modal').style.display='flex'; }
-        function showDay(d) {
+        async function updateExchangeRate() { try { const res = await fetch('https://open.er-api.com/v6/latest/JPY'); const data = await res.json(); if(data.rates.TWD) JPY_RATE = data.rates.TWD; } catch(e) {} }
+        function convertCurr() { const jpy = document.getElementById('jpy-input').value; document.getElementById('twd-output').innerText = jpy ? `約 NT$ ${Math.round(jpy * JPY_RATE).toLocaleString()}` : "約 NT$ 0"; }
+        function openInfo(t,i,d,m) { document.getElementById('modal-title').innerText=t; document.getElementById('modal-desc').innerText=d; document.getElementById('modal-map').href=m; document.getElementById('info-modal').classList.remove('hidden'); document.getElementById('info-modal').classList.add('flex'); }
+        function closeInfo() { document.getElementById('info-modal').classList.add('hidden'); document.getElementById('info-modal').classList.remove('flex'); }
+        function openRescue() { document.getElementById('rescue-modal').classList.remove('hidden'); document.getElementById('rescue-modal').classList.add('flex'); }
+        function openExchange() { document.getElementById('exchange-modal').classList.remove('hidden'); document.getElementById('exchange-modal').classList.add('flex'); setTimeout(()=>document.getElementById('jpy-input').focus(),300); }
+        function showJP(tw, jp) { document.getElementById('jp-tw').innerText=tw; document.getElementById('jp-text').innerText=jp; document.getElementById('jp-modal').classList.remove('hidden'); document.getElementById('jp-modal').classList.add('flex'); }
+        
+        function showDay(dayNum) {
             document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(`day-${d}`).classList.add('active');
+            document.getElementById(`day-${dayNum}`).classList.add('active');
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active'));
-            document.getElementById(`btn-${d}`).classList.add('tab-active');
+            document.getElementById(`btn-${dayNum}`).classList.add('tab-active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        function updateWeather() {
-            const up = async (city, id) => { try { const res = await fetch(`https://wttr.in/${city}?format=%25t`); const t = await res.text(); document.getElementById(id).innerText = t.replace('+',''); } catch(e){} };
-            up('Taipei', 'temp-tpe'); up('Okinawa', 'temp-oka');
+
+        async function updateWeather() {
+            const fetchW = async (city, id) => {
+                try { const res = await fetch(`https://wttr.in/${city}?format=%25t`); const t = await res.text(); document.getElementById(id).innerText = t.replace('+', ''); } catch(e){}
+            };
+            fetchW('Taipei', 'temp-tpe'); fetchW('Okinawa', 'temp-oka');
         }
+
         function updateClocks() {
             const opt = { hour:'2-digit', minute:'2-digit', hour12:false };
             document.getElementById('time-tpe').innerText = new Intl.DateTimeFormat('en-US', {...opt, timeZone:'Asia/Taipei'}).format(new Date());
             document.getElementById('time-oka').innerText = new Intl.DateTimeFormat('en-US', {...opt, timeZone:'Asia/Tokyo'}).format(new Date());
         }
-        
+
         renderUI(); updateClocks(); setInterval(updateClocks, 1000); updateWeather(); updateExchangeRate();
     </script>
 </body>
